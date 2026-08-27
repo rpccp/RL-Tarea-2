@@ -29,8 +29,9 @@
 
 \begin{document}
 
-{\LARGE\bfseries Multi-armed Bandits\par}
-{\large Resumen del capítulo 2\par}
+{\LARGE\bfseries Multi-Armed Bandits\par}
+{\large Resumen del segundo capítulo de \textit{Reinforcement Learning: An Introduction}, de
+Richard S. Sutton y Andrew G. Barto.\par}
 \vspace{0.7em}
 {\normalsize\bfseries INTRODUCCIÓN TEÓRICO-PRÁCTICA AL APRENDIZAJE POR REFUERZO\par}
 \vspace{0.35em}
@@ -48,12 +49,7 @@ Maria Delfina Kiss \hfill 72/23 & Ingrid von Foerster \hfill 150/23
 \end{tabularx}
 
 \vspace{0.35em}
-{\small Basado en \textit{Reinforcement Learning: An Introduction}, de
-Richard S. Sutton y Andrew G. Barto.\par}
-\vspace{0.5em}
 \hrule
-\vspace{0.8em}
-{\small\itshape Nota: no se incluye la parte de \textit{Gradient Bandits}.\par}
 
 \section*{Idea general del capítulo}
 
@@ -74,9 +70,9 @@ prueba y error} para descubrir cuáles son mejores.
 
 El problema de los \textit{multi-armed bandits} simplifica esta idea eliminando estados y consecuencias futuras. Solamente hay que elegir acciones y
 observar recompensas. Así podemos enfocarnos en uno de los problemas
-centrales de RL:
+centrales de RL: la exploración frente a la explotación.
 
-\concepto{\textbf{Exploración frente a explotación}}
+\section{Exploración frente a explotación}
 
 Un multi-armed bandit, dadas $n$ acciones posibles:
 
@@ -101,10 +97,10 @@ es un \textit{one-armed bandit}; aquí imaginamos una máquina con $n$ palancas.
 Además, cada acción $a$ tiene un valor verdadero $q(a)$, que representa su
 \textbf{recompensa esperada}:
 
-\[
-  q(a)=\mathbb{E}\!\left[R_t\mid A_t=a\right].
-\]
-
+\begin{equation}
+    q(a)=\mathbb{E}\!\left[R_t\mid A_t=a\right]
+\end{equation}
+  
 Si conociéramos todos los valores $q(a)$, resolver el problema sería trivial:
 elegiríamos siempre la acción con mayor valor. El problema es que
 \textbf{no conocemos esos valores}, por lo que tenemos que estimarlos.
@@ -113,40 +109,38 @@ elegiríamos siempre la acción con mayor valor. El problema es que
 Suponiendo que tenemos estimaciones de los valores, denotadas por $Q_t(a)$.
 La acción con mayor valor estimado se denomina \textit{greedy action}.
 
-\subsubsection*{Explotación}
+\subsection{Explotación}
 
 Consiste en elegir la acción que actualmente creemos que es mejor:
 
-\[
-  A_t=\argmax_a Q_t(a).
-\]
+\begin{equation}
+    A_t=\argmax_a Q_t(a)
+\end{equation}
 
 Estamos aprovechando el conocimiento que ya tenemos. Su ventaja es que maximiza la
 recompensa esperada \textbf{inmediatamente}; su problema es que podríamos estar
 equivocados acerca de cuál es la mejor acción.
 
-\subsubsection*{Exploración}
+\subsection{Exploración}
 
 Consiste en elegir una acción que actualmente no parece ser la mejor para
 obtener más información sobre ella. Nos permite descubrir acciones mejores,
 pero con el costo de posiblemente producir menos recompensa en el corto plazo.
 
-\concepto{$\text{Exploración}\quad\text{frente a}\quad\text{Explotación}$}
+%\concepto{$\text{Exploración}\quad\text{frente a}\quad\text{Explotación}$}
 
 No podemos explorar y explotar simultáneamente con una misma elección.
 Sacrificar recompensa ahora puede permitir obtener obtener una recompensa mucho mayor en el
 futuro. La decisión óptima depende, entre otras cosas, de:
 
-\begin{itemize}
-  \item las estimaciones actuales;
-  \item la incertidumbre;
-  \item la cantidad de pasos restantes;
-  \item la estabilidad del problema.
-\end{itemize}
-
-Se buscan \textbf{métodos simples que consigan un buen equilibrio}.
-
-Para \textbf{estimar cuánto vale cada acción}, la idea es hacer dos cosas:
+\begin{enumerate}
+  \item las estimaciones actuales
+  \item la incertidumbre
+  \item la cantidad de pasos restantes
+  \item la estabilidad del problema
+\end{enumerate}
+  
+Se buscan \textbf{métodos simples que consigan un buen equilibrio}. Para \textbf{estimar cuánto vale cada acción}, la idea es hacer dos cosas:
 
 \begin{enumerate}
   \item estimar el valor de cada acción;
@@ -156,39 +150,28 @@ Para \textbf{estimar cuánto vale cada acción}, la idea es hacer dos cosas:
 Se distingue entre $q(a)$, el valor \textbf{real} de la acción, y $Q_t(a)$,
 su valor \textbf{estimado} en el tiempo $t$.
 
-\subsection{Promediar las recompensas}
+\subsection{Promediar de recompensas como estimación de valor}
 
 La forma más directa de estimar el valor de una acción es promediar todas las
 recompensas que obtuvimos al elegirla. A esto se lo llama Simple-average method. Si elegimos $a$ un total de
 $N_t(a)$ veces:
 
-\[
-  Q_t(a)=\frac{R_1+R_2+\cdots+R_{N_t(a)}}{N_t(a)}.
-\]
-
-Si la acción todavía nunca fue elegida, puede asignarse un valor inicial como
-
-\[
-  Q_1(a)=0.
-\]
+\begin{equation}
+    Q_t(a)=\frac{R_1+R_2+\cdots+R_{N_t(a)}}{N_t(a)}.
+\end{equation}
+  
+Si la acción todavía nunca fue elegida, puede asignarse un valor inicial como $Q_1(a)=0$.
 
 En un problema \textbf{estacionario}, si probamos la acción infinitas veces,
-entonces, por la ley de los grandes números,
+entonces, por la ley de los grandes números, tenemos que $Q_t(a)\longrightarrow q(a)$.
 
-\[
-  Q_t(a)\longrightarrow q(a).
-\]
+Es decir que la estimación del valor de la acción $a$ se aproxima cada vez más a su valor verdadero a medida que aumenta la experiencia. La estrategia más simple es elegir siempre la acción con mayor valor estimado. A esto se lo denomina
+\textbf{Greedy Action Selection}:
 
-En palabras: la estimación del valor de la acción $a$ se aproxima cada vez más
-a su valor verdadero a medida que aumenta la experiencia.
-
-La estrategia más simple es elegir siempre la acción con mayor valor estimado. A esto se lo denomina
-Greedy Action Selection:
-
-\[
-  A_t=\argmax_a Q_t(a).
-\]
-
+\begin{equation}
+  A_t=\argmax_a Q_t(a) 
+\end{equation}
+  
 Esta es una política \textit{greedy}. El problema es que únicamente explota:
 si una acción tuvo mala suerte en sus primeras recompensas, podría parecer peor
 de lo que realmente es y no volver a ser elegida jamás.
@@ -204,23 +187,10 @@ Por ejemplo, con $\varepsilon=0.1$, aproximadamente el 90\,\% de las decisiones
 son de explotación y el 10\,\% son de exploración.
 
 Como existe una probabilidad positiva de elegir cualquier acción, a largo plazo
-todas las acciones son probadas repetidamente. Por lo tanto,
-
-\[
-  N_t(a)\longrightarrow\infty,
-\]
-
-y las estimaciones terminan acercándose a sus valores verdaderos.
+todas las acciones son probadas repetidamente. Por lo tanto tenemos que $N_t(a)\longrightarrow\infty$ y las estimaciones terminan acercándose a sus valores verdaderos.
 
 El libro compara estos algoritmos mediante un problema experimental con $n=10$
-acciones. Los valores verdaderos $q(a)$ se generan con una distribución normal:
-
-\[
-  \mu=0,\qquad \sigma^2=1,
-\]
-
-y las recompensas también contienen ruido aleatorio. Los resultados se
-promedian sobre \textbf{2000 problemas diferentes durante 1000 pasos}. Se comparan:
+acciones. Los valores verdaderos $q(a)$ se generan con una distribución normal $\mathcal{N}(0, \sigma^2)$ con $\sigma^2 = 1$. Las recompensas también contienen ruido aleatorio. Los resultados se promedian sobre \textbf{2000 problemas diferentes durante 1000 pasos}. Se comparan:
 
 \begin{itemize}
   \item \textit{greedy}: $\varepsilon=0$;
@@ -237,46 +207,31 @@ En cambio, $\varepsilon$-greedy continúa explorando y eventualmente descubre
 mejores acciones. Con $\varepsilon=0.1$ se descubre rápidamente la mejor acción,
 pero se sigue explorando bastante incluso después. Con $\varepsilon=0.01$ se
 aprende más lentamente, pero a largo plazo se explota más la acción óptima.
-Incluso se podría hacer que
-
-\[
-  \varepsilon\longrightarrow 0
-\]
-
-con el tiempo.
+Incluso se podría hacer que $\varepsilon\longrightarrow 0$ con el tiempo.
 
 Cuanto mayor sea el ruido de las recompensas, más difícil es identificar la
 mejor acción y mayor valor tiene la exploración. También es fundamental en
-problemas \textbf{no estacionarios}, donde
+problemas \textbf{no estacionarios}, donde $q_t(a)$ puede cambiar con el tiempo y significa el valor verdadero de la acción $a$ en el instante $t$. Una acción que antes era mala puede convertirse posteriormente en la mejor. Por eso, el equilibrio entre exploración y explotación es una característica fundamental de RL.
 
-\[
-  q_t(a)
-\]
+Ahora bien, supongamos que queremos calcular
 
-puede cambiar con el tiempo. La expresión se lee ``$q$ sub $t$ de $a$'' y
-significa el valor verdadero de la acción $a$ en el instante $t$. Una acción que
-antes era mala puede convertirse posteriormente en la mejor. Por eso, el
-equilibrio entre exploración y explotación es una característica fundamental de RL.
-
-Supongamos que queremos calcular
-
-\[
-  Q_n=\frac{R_1+\cdots+R_n}{n}.
-\]
+\begin{equation}
+    Q_n=\frac{R_1+\cdots+R_n}{n}
+\end{equation}
 
 La forma más directa de hacer esta cuenta sería guardar \textbf{todas las
 recompensas anteriores}. El problema es que cada vez necesitaríamos más memoria
 y más cómputo. Por suerte, podemos actualizar el promedio de a poco. Si ya
 tenemos $Q_k$ y recibimos $R_k$:
 
-\[
-  \boxed{Q_{k+1}=Q_k+\frac{1}{k}\left(R_k-Q_k\right)}.
-\]
-
+\begin{equation}
+    \boxed{Q_{k+1}=Q_k+\frac{1}{k}\left(R_k-Q_k\right)}
+\end{equation}
+  
 Así solamente necesitamos almacenar el valor actual $Q_k$ y el contador $k$. Y de esta
 manera, podemos actualizar estimaciones sin guardar todo
 
-\subsection{Una regla que nos aparece}
+%\section{Una regla que nos aparece}
 
 Esta fórmula es importante porque tiene una estructura que se vuelve a ver
 una y otra vez en aprendizaje por refuerzo:
@@ -285,7 +240,7 @@ una y otra vez en aprendizaje por refuerzo:
   \boxed{
   \text{Nueva estimación}
   =\text{Estimación anterior}
-  +\text{Tamaño de paso}
+  +\text{Tamaño de paso} \times
   \left[\text{Objetivo}-\text{Estimación anterior}\right]
   }.
 \]
@@ -299,48 +254,31 @@ De forma abreviada:
   },
 \]
 
-donde
-
-\[
-  \text{Error}=\text{Objetivo}-\text{Estimación anterior}.
-\]
+donde $\text{Error}=\text{Objetivo}-\text{Estimación anterior}$
 
 La nueva estimación se mueve parcialmente hacia un \textbf{objetivo}
 (\textit{target}). Esta estructura es una de las ideas más importantes del
 capítulo porque reaparece constantemente en algoritmos posteriores.
 
-Hasta ahora veníamos suponiendo que $q(a)$ era constante. Pero en muchos entornos
-
-\[
-  q_t(a)\neq q_{t+1}(a).
-\]
-
-En esos casos, promediar \textbf{toda la historia} puede jugar en contra: las
-recompensas de hace mucho tiempo quizás ya no representen lo que está pasando
+Hasta ahora veníamos suponiendo que $q(a)$ era constante. Pero en muchos entornos se tiene que $q_t(a)\neq q_{t+1}(a)$. En esos casos, promediar \textbf{toda la historia} puede jugar en contra: las recompensas de hace mucho tiempo quizás ya no representen lo que está pasando
 ahora.
 
-Para dar mayor importancia a las observaciones recientes se utiliza
+Para dar mayor importancia a las observaciones recientes se utiliza la siguiente formula: 
 
-\[
-  \boxed{Q_{k+1}=Q_k+\alpha\left(R_k-Q_k\right)},
-  \qquad 0<\alpha\leq 1,
-\]
-
-con $\alpha$ constante.
-
+\begin{equation}
+    \boxed{Q_{k+1}=Q_k+\alpha\left(R_k-Q_k\right)}
+    \qquad \text{ con } 0<\alpha\leq 1
+\end{equation}
+  
 Al expandir la fórmula se obtiene
 
-\[
-  Q_{k+1}=(1-\alpha)^kQ_1
+\begin{equation}
+    Q_{k+1}=(1-\alpha)^kQ_1
   +\sum_{i=1}^{k}\alpha(1-\alpha)^{k-i}R_i.
-\]
+\end{equation}
 
 Las recompensas más recientes reciben mayor peso. El peso de una recompensa
-antigua disminuye aproximadamente de forma exponencial:
-
-\[
-  \alpha(1-\alpha)^{k-i}.
-\]
+antigua disminuye aproximadamente de forma exponencial: $\alpha(1-\alpha)^{k-i}$
 
 Por eso se denomina \textbf{promedio ponderado exponencialmente por recencia}
 (\textit{exponential recency-weighted average}).
@@ -353,49 +291,30 @@ Si $\alpha$ es pequeño, por ejemplo $\alpha=0.01$, la estimación cambia
 lentamente, es más estable y conserva información antigua durante más tiempo.
 
 Si utilizamos una secuencia de tamaños de paso $\alpha_k(a)$, para garantizar
-convergencia suelen exigirse las condiciones
+convergencia suelen exigirse las siguientes condiciones:
 
-\[
-  \sum_{k=1}^{\infty}\alpha_k(a)=\infty
-\]
+\begin{itemize}
+    \item $\sum_{k=1}^{\infty}\alpha_k(a)=\infty$
+    \item $\sum_{k=1}^{\infty}\alpha_k^2(a)<\infty$
+\end{itemize}
 
-y
-
-\[
-  \sum_{k=1}^{\infty}\alpha_k^2(a)<\infty.
-\]
+%\[
+%  \sum_{k=1}^{\infty}\alpha_k(a)=\infty \text{  y  }
+%  \sum_{k=1}^{\infty}\alpha_k^2(a)<\infty.
+%\]
 
 La primera evita que el algoritmo deje de aprender demasiado pronto. La segunda
 hace que los cambios eventualmente sean suficientemente pequeños como para
 permitir la convergencia.
 
-Por ejemplo,
-
-\[
-  \alpha_k=\frac{1}{k}
-\]
-
-cumple ambas condiciones. En cambio, un valor constante
-
-\[
-  \alpha_k=\alpha
-\]
-
-no cumple la segunda. Esto \textbf{no es necesariamente malo}: en un problema
+Por ejemplo, tomando $\alpha_k=\frac{1}{k}$ se tiene que cumple ambas condiciones. En cambio, un valor constante como $\alpha_k=\alpha$ no cumple la segunda. Esto \textbf{no es necesariamente malo}: en un problema
 no estacionario queremos que $Q_t(a)$ siga cambiando para adaptarse a las
 modificaciones del entorno. Por eso los tamaños de paso constantes son muy
 útiles en RL.
 
 Toda estimación necesita un punto de partida $Q_1(a)$. En vez de usar, por
 ejemplo, $Q_1(a)=0$, podemos arrancar deliberadamente con valores demasiado
-altos, como
-
-\[
-  Q_1(a)=5,
-\]
-
-aunque las recompensas reales estén aproximadamente alrededor de cero. Esto se
-denomina \textbf{valores iniciales optimistas}.
+altos, como $Q_1(a)=5$ aunque las recompensas reales estén aproximadamente alrededor de cero. Estos se denominan \textbf{valores iniciales optimistas}.
 
 Suponiendo que $Q_1(a)=5$ para todas las acciones. Elegimos una acción y
 obtenemos $R=1$; entonces, su estimación disminuye. Las demás todavía tienen
@@ -417,17 +336,20 @@ volver a probar acciones claramente malas y dejar otras, más prometedoras pero
 poco conocidas, en segundo plano. UCB (\textit{Upper Confidence Bound}) intenta
 explorar con un poco más de criterio.
 
-\subsection{Fórmula UCB}
+\section{El Upper Confidence Bound (UCB)}
+
+\subsection{Formulación}
 
 Se elige
 
-\[
-  \boxed{
+\begin{equation}
+      \boxed{
   A_t=\argmax_a\left[
   Q_t(a)+c\sqrt{\frac{\ln t}{N_t(a)}}
   \right]
-  }.
-\]
+  }
+
+\end{equation}
 
 La expresión tiene dos partes:
 
@@ -438,26 +360,19 @@ La expresión tiene dos partes:
         acciones sobre las que tenemos mayor incertidumbre.
 \end{enumerate}
 
-$N_t(a)$ indica cuántas veces elegimos la acción. Si fue elegida pocas veces,
-$N_t(a)$ es pequeño y
-
-\[
-  \sqrt{\frac{\ln t}{N_t(a)}}
-\]
-
-es grande. Por lo tanto, UCB la considera atractiva para explorar. Cuando la
+$N_t(a)$ indica cuántas veces elegimos la acción. Si fue elegida pocas veces, $N_t(a)$ es pequeño y $\sqrt{\frac{\ln t}{N_t(a)}}$ es grande. Por lo tanto, UCB la considera atractiva para explorar. Cuando la
 probamos muchas veces, $N_t(a)$ aumenta y el incentivo de exploración disminuye.
 
-El parámetro $c>0$ controla cuánto se valora la exploración:
+El parámetro $c>0$ controla cuánto se valora la exploración, por tanto:
 
 \begin{itemize}
   \item un $c$ grande produce más exploración;
   \item un $c$ pequeño produce más explotación.
 \end{itemize}
 
-\subsection{La idea detrás de UCB}
+\subsection{Su idea detrás}
 
-UCB puede interpretarse como la elección de la acción con el mayor
+El UCB puede interpretarse como la elección de la acción con el mayor
 \textbf{valor plausible optimista}:
 
 \[
@@ -482,13 +397,7 @@ estas ideas a problemas generales de RL, especialmente cuando existen:
 Hasta ahora, el agente siempre enfrentaba mas o menos \textbf{la misma
 situación}. Por eso, el problema era encontrar la mejor acción. En el
 aprendizaje por refuerzo completo existen diferentes situaciones, de modo que
-tenemos que aprender una relación
-
-\[
-  \text{situación}\longrightarrow\text{acción},
-\]
-
-es decir, una \textbf{política}.
+tenemos que aprender una relación situación $\longrightarrow$ acción, es decir, una \textbf{política}.
 
 Supongamos que existen varios bandits diferentes y que cada vez que jugamos
 aparece uno distinto. Si no sabemos cuál apareció, el problema parece simplemente
@@ -524,12 +433,11 @@ aprendizaje por refuerzo completo. En los bandits contextuales:
   \item la acción solamente afecta la recompensa inmediata.
 \end{itemize}
 
-En RL completo, además,
+En RL completo, además, tenemos que \textbf{la acción también afecta el estado futuro}.
 
-\concepto{\textbf{la acción también afecta el estado futuro}.}
+\section{Conclusión}
 
-Nos quedamos con que \textbf{aprender no es solamente elegir lo que hoy parece mejor;
-también hay que invertir algunas acciones en conseguir información para decidir
-mejor más adelante}.
+Nos quedamos con que aprender no es solamente elegir lo que hoy parece mejor; también hay que invertir algunas acciones en conseguir información para decidir
+mejor más adelante.
 
 \end{document}
